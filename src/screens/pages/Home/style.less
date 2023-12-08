@@ -1,0 +1,31 @@
+.home_page {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+
+    .home_page--header {
+        height: 50px;
+    }
+
+    .home_page--canvas {
+        height: calc(100% - 50px - 30px);
+        width: 100%;
+        overflow: auto;
+        position: relative;
+
+        .canvas_fg {
+            position: absolute;
+            z-index: 5;
+        }
+
+        .canvas_helper {
+            position: absolute;
+            z-index: 4;
+        }
+
+        .canvas_bg {
+            position: absolute;
+            z-index: 3;
+        }
+    }
+}

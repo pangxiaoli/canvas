@@ -1,0 +1,44 @@
+@font-face {
+    font-family: 'iconfont';
+    src: url('iconfont.woff2') format('woff2');
+}
+
+.iconfont {
+    font-family: 'iconfont' !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.c-daochu:before {
+    content: '\e7a6';
+}
+
+.c-qiehuanditu:before {
+    content: '\ee2f';
+}
+
+.c-dkwj:before {
+    content: '\e65b';
+}
+
+.c-guidao:before {
+    content: '\e612';
+}
+
+.c-sheji:before {
+    content: '\e70a';
+}
+
+.c-shanchu:before {
+    content: '\e601';
+}
+
+.c-huoche:before {
+    content: '\e615';
+}
+
+.c-baocun:before {
+    content: '\e644';
+}
