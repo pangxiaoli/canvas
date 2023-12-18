@@ -1,37 +1,50 @@
 export type TInserval = {
     start: number;
     end: number;
-    name: string;
-    area: string;
     center: number;
+    yard: string;
+    track: TTrack;
 };
 
 export type TLine = {
     startX: number;
-    startY: number;
     endX: number;
-    endY: number;
+    center: number;
+    yard: string;
+    track: TTrack;
 };
 
 export type TPath = {
     lines: TLine[];
 };
 
-type TBaseList = {
+export type TTrack = {
+    id: string;
     name: string;
-    lines: string[];
+};
+
+type TYards = {
+    name: string;
+    tracks: TTrack[];
+};
+
+type TTransferTime = {
+    form: TTrack['id'];
+    to: TTrack['id'];
+    time: number;
 };
 
 export type TBaseData = {
     date: string;
-    class: string;
+    class: '0' | '1'; // 0 白班; 1 夜班
     group: string;
     admin: string;
-    list: TBaseList[];
+    yards: TYards[];
+    transferTime: TTransferTime[];
 };
 
 export type TDraw = {
-    baseData: any;
+    baseData: TBaseData;
     intervals: TInserval[];
     isDraw: boolean;
     path: TPath[];

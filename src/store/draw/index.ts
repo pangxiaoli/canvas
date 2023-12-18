@@ -24,7 +24,10 @@ const draw = createSlice({
             }
         },
         pushPath: (state, action) => {
-            state.path.at(-1)?.lines.push(action.payload);
+            state.path.at(-1)?.lines.push(...action.payload);
+        },
+        setPath: (state, action) => {
+            state.path = action.payload;
         },
         clearPath: state => {
             state.path = [];
@@ -32,6 +35,6 @@ const draw = createSlice({
     },
 });
 
-export const { setBaseData, setIntervals, setIsDraw, createPath, pushPath, clearPath } =
+export const { setBaseData, setIntervals, setIsDraw, createPath, pushPath, setPath, clearPath } =
     draw.actions;
 export default draw.reducer;
