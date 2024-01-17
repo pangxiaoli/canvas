@@ -1,14 +1,17 @@
 import { Layer, Line, Rect, Text } from 'react-konva';
-import React, { useContext } from 'react';
-import { TInserval } from '@/store/draw/initialState/type';
-import { useDispatch } from 'react-redux';
+import React from 'react';
+import { EClasses, TInserval } from '@/store/draw/initialState/type';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { setIntervals } from '@/store/draw';
-import { SizeCtx } from '..';
+import { getClasses, getSize, getStation } from '@/store/draw/selectors';
 
 const BgLayer: React.FC = () => {
     const dispatch = useDispatch();
-    const size = useContext(SizeCtx);
-    const timeStart = size.data.class === '0' ? 6 : 20;
+    const size = useSelector(getSize, shallowEqual);
+    const classes = useSelector(getClasses, shallowEqual);
+    const section = useSelector(getStation, shallowEqual);
+
+    const timeStart = classes === EClasses.DAY ? 6 : 20;
 
     // 股道
     const renderTrack = () => {
@@ -20,7 +23,7 @@ const BgLayer: React.FC = () => {
         const [x0, y0] = [size.padding, size.padding + size.titleH + size.rawH / 2];
         let dh = 0;
 
-        size.data.yards.forEach((i, idx) => {
+        section.yards.forEach((i, idx) => {
             i.tracks.forEach((j, jdx) => {
                 tracks.push(
                     <Text
