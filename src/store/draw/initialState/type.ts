@@ -1,3 +1,5 @@
+import { TLine } from '@/screens/pages/Home/Canvas/FgLayer/hooks/type';
+
 export type TInserval = {
     start: number;
     end: number;
@@ -6,46 +8,65 @@ export type TInserval = {
     track: TTrack;
 };
 
-export type TLine = {
-    startX: number;
-    endX: number;
-    center: number;
-    yard: string;
-    track: TTrack;
-};
-
-export type TPath = {
-    lines: TLine[];
-};
-
 export type TTrack = {
     id: string;
     name: string;
 };
 
-type TYards = {
+type TYard = {
     name: string;
+    /** 股道 */
     tracks: TTrack[];
 };
-
-type TTransferTime = {
-    form: TTrack['id'];
-    to: TTrack['id'];
+type TSwitch = {
+    id: string;
+    tracks: [TTrack['id'], TTrack['id']];
+    /** 通过时间 */
     time: number;
 };
+export type TStation = {
+    name: string;
+    /** 车厂 */
+    yards: TYard[];
+    /** 道岔 */
+    switch: TSwitch[];
+};
+export enum EClasses {
+    DAY,
+    NIGHT,
+}
 
-export type TBaseData = {
+type TPlanPath = {
+    train: string;
+    scheme: TLine[];
+};
+export type TPlan = {
     date: string;
-    class: '0' | '1'; // 0 白班; 1 夜班
+    classes: EClasses;
     group: string;
     admin: string;
-    yards: TYards[];
-    transferTime: TTransferTime[];
+    path: TPlanPath[];
 };
-
+export type TSize = {
+    titleH: number;
+    rawH: number;
+    /** 每分钟宽度 */
+    minW: number;
+    /** 每列 即 1h 宽度 */
+    colW: number;
+    /** 列数 */
+    colNum: number;
+    tableH: number;
+    tableW: number;
+    domH: number;
+    domW: number;
+    padding: number;
+    captionW: number[];
+};
 export type TDraw = {
-    baseData: TBaseData;
+    size: TSize;
     intervals: TInserval[];
     isDraw: boolean;
-    path: TPath[];
+    station: TStation;
+    plan: TPlan;
 };

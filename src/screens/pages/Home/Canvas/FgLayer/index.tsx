@@ -1,84 +1,37 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import { Layer, Line, Rect } from 'react-konva';
-import { SizeCtx } from '..';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { getIntervals, getIsDraw, getPath, getTransferTime } from '@/store/draw/selectors';
-import { findIntervalName } from '../utils/findIntervalName';
-import { TLine } from '@/store/draw/initialState/type';
-import { pushPath, setIsDraw } from '@/store/draw';
-import useDialog from '@/hooks/useDialog';
-import { Html } from 'react-konva-utils';
-import TrainInfo from './TrainInfo';
+import { getPath, getSize } from '@/store/draw/selectors';
+import useDraw from './hooks/useDraw';
+import usePoint from './hooks/usePoint';
+import { createPlan } from '@/store/draw/actions';
 
 const FgLayer: React.FC = () => {
     const dispatch = useDispatch();
-    const size = useContext(SizeCtx);
-    const isDraw = useSelector(getIsDraw, shallowEqual);
-    const intervals = useSelector(getIntervals, shallowEqual);
 
-    const { ctx, open } = useDialog(<TrainInfo data={{ lines: [] }} size={size} />);
-
+    const size = useSelector(getSize, shallowEqual);
     const path = useSelector(getPath, shallowEqual);
-    const transferTime = useSelector(getTransferTime);
-
-    const [lines, setLines] = useState<TLine[]>([]);
 
     const isDone = useRef<boolean>(false);
+    const draw = useDraw();
+    const point = usePoint();
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        if (isDraw && e.evt.button === 0) {
-            const stage = e.target.getStage();
-            const point = stage?.getPointerPosition();
+        const stage = e.target.getStage();
+        const point = stage?.getPointerPosition();
 
-            if (point) {
-                isDone.current = true;
-
-                const interval = findIntervalName(intervals, point.y);
-                if (lines.length) {
-                    const [trackFrom, trackTo] = [lines.at(-1)!.track.id, interval.track.id];
-
-                    const res = transferTime.find(
-                        i =>
-                            (i.form === trackFrom && i.to === trackTo) ||
-                            (i.form === trackTo && i.to === trackFrom),
-                    );
-                    if (!res) {
-                        return;
-                    }
-                    setLines([
-                        ...lines,
-                        {
-                            startX: lines.at(-1)!.endX + (res.time * size.colW) / 60,
-                            endX: point.x,
-                            center: interval.center,
-                            yard: interval.yard,
-                            track: interval.track,
-                        },
-                    ]);
-                } else {
-                    setLines([
-                        ...lines,
-                        {
-                            startX: point.x,
-                            endX: point.x,
-                            center: interval.center,
-                            yard: interval.yard,
-                            track: interval.track,
-                        },
-                    ]);
-                }
-            }
+        if (e.evt.button === 0 && point) {
+            isDone.current = true;
+            draw.addLine(point.x, point.y);
         }
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         const stage = e.target.getStage();
         const point = stage?.getPointerPosition();
 
-        if (point?.x && isDone.current) {
-            const lastLine = lines.at(-1);
-            lastLine!.endX = point.x;
-            setLines([...lines.splice(0, lines.length - 1)!, lastLine!]);
+        if (isDone.current && point) {
+            draw.pushPoint(point.x, point.y);
         }
     };
     const handleMouseUp = () => {
@@ -86,108 +39,107 @@ const FgLayer: React.FC = () => {
     };
     const handleContentMenu = (e: KonvaEventObject<MouseEvent>) => {
         e.evt.preventDefault();
-
-        dispatch(pushPath(lines));
-        dispatch(setIsDraw(false));
-        setLines([]);
-
-        const stage = e.target.getStage();
-        if (!stage) {
-            return;
-        }
-        stage.container().style.cursor = 'default';
+        dispatch(createPlan(draw.lines));
+        draw.clearLine();
+    };
+    const handleMouseLeave = () => {
+        isDone.current = false;
     };
 
-    const handleMouseEnter = (e: KonvaEventObject<MouseEvent>) => {
-        const stage = e.target.getStage();
-        if (!stage) {
-            return;
-        }
-        stage.container().style.cursor = isDraw ? 'crosshair' : 'default';
-    };
-    const handleMouseLeave = (e: KonvaEventObject<MouseEvent>) => {
-        const stage = e.target.getStage();
-        if (!stage) {
-            return;
-        }
-        stage.container().style.cursor = 'default';
-    };
+    const renderLine = () => {
+        return draw.lines.map((i, index) => {
+            const start = point.getPos(i.startTime.h, i.startTime.m, i.center.track.id);
+            const end = point.getPos(i.endTiem.h, i.endTiem.m, i.center.track.id);
 
-    const renderLine = () =>
-        lines.map((i, index) => (
-            <Line
-                key={index}
-                points={[i.startX, i.center, i.endX, i.center]}
-                stroke='blue'
-                strokeWidth={6}
-                lineCap='round'
-                lineJoin='round'
-                globalCompositeOperation={'source-over'}
-            />
-        ));
+            return (
+                <Line
+                    key={'line' + index}
+                    points={[start.x, start.y, end.x, end.y]}
+                    stroke='blue'
+                    strokeWidth={6}
+                    lineCap='round'
+                    lineJoin='round'
+                    globalCompositeOperation={'source-over'}
+                />
+            );
+        });
+    };
 
     const renderPath = () => {
-        const _path: any = [];
+        const _path: ReactNode[] = [];
 
-        path.forEach((i, idx) => {
-            const rLines = [];
-            for (let jdx = 0; jdx < i.lines.length; jdx++) {
-                const j = i.lines[jdx];
+        for (let i = 0; i < path.length; i++) {
+            for (let j = 0; j < path[i].scheme.length; j++) {
+                const ele = path[i].scheme[j];
 
-                if (jdx === 0) {
-                    rLines.push([
-                        j.startX,
-                        size.padding + size.titleH + size.rawH,
-                        j.startX,
-                        j.center,
-                    ]);
-                } else if (jdx === i.lines.length - 1) {
-                    rLines.push(
-                        [i.lines[jdx - 1].endX, i.lines[jdx - 1].center, j.startX, j.center],
-                        [
-                            j.endX,
-                            j.center,
-                            j.endX,
-                            size.padding + size.titleH + size.tableH - size.rawH / 2,
-                        ],
-                    );
-                } else {
-                    rLines.push([
-                        i.lines[jdx - 1].endX,
-                        i.lines[jdx - 1].center,
-                        j.startX,
-                        j.center,
-                    ]);
-                }
+                const start = point.getPos(ele.startTime.h, ele.startTime.m, ele.center.track.id);
+                const end = point.getPos(ele.endTiem.h, ele.endTiem.m, ele.center.track.id);
 
                 _path.push(
                     <Line
-                        key={'c' + idx + jdx}
-                        points={[j.startX, j.center, j.endX, j.center]}
+                        key={'path' + i + j}
+                        points={[start.x, start.y, end.x, end.y]}
                         stroke='blue'
                         strokeWidth={8}
                         globalCompositeOperation={'source-over'}
-                        onClick={() => {
-                            open({ data: i });
-                        }}
                     />,
                 );
-            }
 
-            rLines.forEach((i, index) =>
-                _path.push(
-                    <Line
-                        key={'r' + idx + index}
-                        points={i}
-                        stroke={
-                            index === 0 ? 'blue' : index === rLines.length - 1 ? 'red' : '#d9d9d9'
-                        }
-                        strokeWidth={1}
-                        globalCompositeOperation={'source-over'}
-                    />,
-                ),
-            );
-        });
+                /**
+                 * 起始、两段之间的连线、结束
+                 */
+                if (j === 0) {
+                    _path.push(
+                        <Line
+                            key={'start' + i + j}
+                            points={[
+                                start.x,
+                                size.padding + size.titleH + size.rawH,
+                                start.x,
+                                start.y,
+                            ]}
+                            stroke='#4b63b2'
+                            strokeWidth={1}
+                            globalCompositeOperation={'source-over'}
+                        />,
+                    );
+                }
+                if (j < path[i].scheme.length - 1) {
+                    const next = path[i].scheme[j + 1];
+                    const nextStart = point.getPos(
+                        next.startTime.h,
+                        next.startTime.m,
+                        next.center.track.id,
+                    );
+
+                    _path.push(
+                        <Line
+                            key={'subs' + i + j}
+                            points={[end.x, end.y, nextStart.x, nextStart.y]}
+                            stroke='#d9d9d9'
+                            strokeWidth={1}
+                            globalCompositeOperation={'source-over'}
+                        />,
+                    );
+                }
+                if (j === path[i].scheme.length - 1) {
+                    _path.push(
+                        <Line
+                            key={'end' + i + j}
+                            points={[
+                                end.x,
+                                size.padding + size.titleH + size.tableH - size.rawH / 2,
+                                end.x,
+                                end.y,
+                            ]}
+                            stroke='red'
+                            strokeWidth={1}
+                            globalCompositeOperation={'source-over'}
+                        />,
+                    );
+                }
+            }
+        }
 
         return _path;
     };
@@ -203,13 +155,10 @@ const FgLayer: React.FC = () => {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onContextMenu={handleContentMenu}
-                onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
             />
             {renderLine()}
             {renderPath()}
-
-            <Html>{ctx}</Html>
         </Layer>
     );
 };

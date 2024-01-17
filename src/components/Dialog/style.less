@@ -15,7 +15,18 @@
         background-color: white;
         border-radius: 10px;
         font-size: 18px;
+        animation: show 0.2s ease-in-out;
 
         cursor: pointer;
+
+        @keyframes show {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
     }
 }

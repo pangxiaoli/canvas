@@ -21,7 +21,8 @@
         "react-konva-utils": "^1.0.5",
         "react-redux": "^9.0.4",
         "react-router-dom": "^6.20.1",
-        "react-tooltip": "^5.25.0"
+        "react-tooltip": "^5.25.0",
+        "yaml": "^2.3.4"
     },
     "devDependencies": {
         "@types/node": "^20.10.4",

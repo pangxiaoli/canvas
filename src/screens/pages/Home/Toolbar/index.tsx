@@ -2,28 +2,21 @@ import classNames from 'classnames';
 import React, { HTMLAttributes } from 'react';
 import './style.less';
 import Icon from '@/components/Icon';
-import { clearPath, createPath, setBaseData, setIsDraw, setPath } from '@/store/draw';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { setIsDraw } from '@/store/draw';
+import { useDispatch } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
-import { downloadObjectAsJson } from './utils/downloadObjectAsJson';
-import { getBaseData, getPath } from '@/store/draw/selectors';
 
 export type IToolbarProps = HTMLAttributes<HTMLElement>;
 
 const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
     const dispatch = useDispatch();
-    const data = useSelector(getBaseData, shallowEqual);
-
-    const path = useSelector(getPath, shallowEqual);
 
     const handleAdd = () => {
         dispatch(setIsDraw(true));
-        dispatch(createPath());
     };
 
-    const handelExport = () => downloadObjectAsJson(data, data.date);
-
-    const handelDel = () => dispatch(clearPath());
+    const handelExport = () => {};
+    const handelDel = () => {};
 
     const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target?.files?.length) {
@@ -34,7 +27,7 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
         fileReader.readAsText(e.target.files[0], 'UTF-8');
         fileReader.onload = res => {
             if (res.target?.result && typeof res.target?.result === 'string') {
-                dispatch(setBaseData(JSON.parse(res.target.result)));
+                // TODO
             }
         };
     };
@@ -48,12 +41,12 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
         fileReader.readAsText(e.target.files[0], 'UTF-8');
         fileReader.onload = res => {
             if (res.target?.result && typeof res.target?.result === 'string') {
-                dispatch(setPath(JSON.parse(res.target.result)));
+                //TODO
             }
         };
     };
 
-    const handleLineSave = () => downloadObjectAsJson(path, 'data' + data.date);
+    const handleLineSave = () => {};
 
     return (
         <div className={classNames('home_page--toolbar', className)} {...resetProps}>
