@@ -1,8 +1,9 @@
 import { formatDate } from '../util/formatDate';
-import { EClasses, TDraw } from './type';
+import { EClasses, EPenState, TDraw } from './type';
 
 const initialState: TDraw = {
     isDraw: false,
+    penState: EPenState.NOT_STARTED,
     intervals: [],
     station: {
         name: '上海南',
