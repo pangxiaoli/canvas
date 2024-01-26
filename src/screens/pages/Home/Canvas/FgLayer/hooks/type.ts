@@ -1,4 +1,4 @@
-type TTime = {
+export type TTime = {
     h: number;
     m: number;
 };
@@ -41,9 +41,12 @@ export type TPos = {
 };
 
 export type TGetPoint = <T extends number>(x: T, y: T) => TPoint;
+export type TGetTime = (x: number) => TTime;
 export type TGetPos = <T extends number>(timeH: T, timeM: T, trackID: string) => TPos;
-export type TUsePoion = () => {
+export type TUsePoiot = () => {
     getPoint: TGetPoint;
+    getTime: TGetTime;
+    getPos: TGetPos;
 };
 
 /**

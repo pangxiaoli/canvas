@@ -3,6 +3,7 @@ import {
     TGetIntervals,
     TGetIsDraw,
     TGetPath,
+    TGetPenState,
     TGetPlan,
     TGetSTation,
     TGetSize,
@@ -10,7 +11,7 @@ import {
 
 export const getIntervals: TGetIntervals = state => state.draw.intervals;
 export const getIsDraw: TGetIsDraw = state => state.draw.isDraw;
-
+export const getPenState: TGetPenState = state => state.draw.penState;
 export const getStation: TGetSTation = state => state.draw.station;
 export const getPlan: TGetPlan = state => state.draw.plan;
 export const getPath: TGetPath = state => state.draw.plan.path;

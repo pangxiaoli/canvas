@@ -1,5 +1,14 @@
 import { TLine } from '@/screens/pages/Home/Canvas/FgLayer/hooks/type';
 
+export enum EPenState {
+    /** 未开始 */
+    NOT_STARTED,
+    /** 绘制中 */
+    DRAWING,
+    /** 修改中 */
+    MODIFYING,
+}
+
 export type TInserval = {
     start: number;
     end: number;
@@ -36,7 +45,8 @@ export enum EClasses {
     NIGHT,
 }
 
-type TPlanPath = {
+export type TPlanPath = {
+    id: number | string;
     train: string;
     scheme: TLine[];
 };
@@ -49,6 +59,7 @@ export type TPlan = {
 };
 export type TSize = {
     titleH: number;
+    /** 每条股道所占高度 即图上两行的高度 */
     rawH: number;
     /** 每分钟宽度 */
     minW: number;
@@ -64,6 +75,7 @@ export type TSize = {
     captionW: number[];
 };
 export type TDraw = {
+    penState: EPenState;
     size: TSize;
     intervals: TInserval[];
     isDraw: boolean;

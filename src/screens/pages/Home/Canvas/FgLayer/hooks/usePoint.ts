@@ -1,9 +1,9 @@
 import { getClasses, getIntervals, getSize } from '@/store/draw/selectors';
 import { useSelector, shallowEqual } from 'react-redux';
-import { TGetPoint, TGetPos, TPoint } from './type';
+import { TGetPoint, TGetPos, TGetTime, TPoint, TUsePoiot } from './type';
 import { EClasses } from '@/store/draw/initialState/type';
 
-const usePoint = () => {
+const usePoint: TUsePoiot = () => {
     const intervals = useSelector(getIntervals, shallowEqual);
 
     const classes = useSelector(getClasses, shallowEqual);
@@ -41,6 +41,15 @@ const usePoint = () => {
         return res;
     };
 
+    const getTime: TGetTime = x => {
+        const timeMin = (x - xLeft) / size.minW;
+
+        return {
+            h: timeStart + Math.floor(timeMin / 60),
+            m: Math.round(timeMin % 60),
+        };
+    };
+
     const getPos: TGetPos = (timeH, timeM, trackID) => {
         const res = {
             x: 0,
@@ -59,6 +68,7 @@ const usePoint = () => {
 
     return {
         getPoint,
+        getTime,
         getPos,
     };
 };
