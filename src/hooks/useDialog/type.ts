@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 export type TUseDialog = (content: ReactNode) => {
-    ctx: ReactNode;
+    Ctx: ReactNode;
     open: (data?: any) => void;
     close: () => void;
 };

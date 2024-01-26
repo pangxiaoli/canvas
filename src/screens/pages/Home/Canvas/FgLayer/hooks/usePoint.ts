@@ -7,7 +7,7 @@ const usePoint: TUsePoiot = () => {
     const intervals = useSelector(getIntervals, shallowEqual);
 
     const classes = useSelector(getClasses, shallowEqual);
-    const timeStart = classes === EClasses.DAY ? 6 : 20;
+    const timeStart = classes === EClasses.DAY ? 8 : 20;
 
     const size = useSelector(getSize, shallowEqual);
     const xLeft = size.captionW.reduce((a, b) => a + b, 0) + size.padding;
@@ -34,7 +34,7 @@ const usePoint: TUsePoiot = () => {
 
         const timeMin = (x - xLeft) / size.minW;
         res.time = {
-            h: timeStart + Math.floor(timeMin / 60),
+            h: (timeStart + Math.floor(timeMin / 60)) % 24,
             m: Math.round(timeMin % 60),
         };
 
@@ -45,7 +45,7 @@ const usePoint: TUsePoiot = () => {
         const timeMin = (x - xLeft) / size.minW;
 
         return {
-            h: timeStart + Math.floor(timeMin / 60),
+            h: (timeStart + Math.floor(timeMin / 60)) % 24,
             m: Math.round(timeMin % 60),
         };
     };

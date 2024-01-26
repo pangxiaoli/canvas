@@ -1,7 +1,7 @@
 import { dragScheme, updateSchemeTime } from '@/store/draw/actions';
 import { getSize, getPath } from '@/store/draw/selectors';
 import { ReactNode } from 'react';
-import { Line } from 'react-konva';
+import { Line, Text } from 'react-konva';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import TransformableLine from './TransformableLine';
 import usePoint from './hooks/usePoint';
@@ -67,6 +67,26 @@ const Paths = () => {
                         strokeWidth={1}
                         globalCompositeOperation={'source-over'}
                     />,
+                    <Line
+                        key={'header' + i + j}
+                        points={[
+                            start.x - size.rawH / 2,
+                            size.padding + size.titleH + size.rawH / 2,
+                            start.x,
+                            size.padding + size.titleH + size.rawH,
+                        ]}
+                        stroke='#4b63b2'
+                        strokeWidth={1}
+                        globalCompositeOperation={'source-over'}
+                    />,
+                    <Text
+                        key={'text' + i + j}
+                        text={path[i].train}
+                        x={start.x - size.rawH / 2}
+                        y={size.padding + size.titleH + size.rawH / 2}
+                        fill='black'
+                        fontSize={14}
+                    />,
                 );
             }
             if (j < path[i].scheme.length - 1) {
@@ -96,6 +116,22 @@ const Paths = () => {
                             size.padding + size.titleH + size.tableH - size.rawH / 2,
                             end.x,
                             end.y,
+                        ]}
+                        stroke='red'
+                        strokeWidth={1}
+                        globalCompositeOperation={'source-over'}
+                    />,
+                    <Line
+                        key={'ender' + i + j}
+                        points={[
+                            end.x,
+                            size.padding + size.titleH + size.tableH - size.rawH / 2,
+                            end.x + size.rawH / 2,
+                            size.padding +
+                                size.titleH +
+                                size.tableH -
+                                size.rawH / 2 +
+                                size.rawH / 2,
                         ]}
                         stroke='red'
                         strokeWidth={1}

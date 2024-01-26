@@ -5,6 +5,7 @@ import {
     TGetPath,
     TGetPenState,
     TGetPlan,
+    TGetPlanInfo,
     TGetSTation,
     TGetSize,
 } from './type';
@@ -17,3 +18,4 @@ export const getPlan: TGetPlan = state => state.draw.plan;
 export const getPath: TGetPath = state => state.draw.plan.path;
 export const getSize: TGetSize = state => state.draw.size;
 export const getClasses: TGetClasses = state => state.draw.plan.classes;
+export const getPlanInfo: TGetPlanInfo = state => state.draw.plan;

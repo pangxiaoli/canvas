@@ -1,17 +1,21 @@
 import { createReducer } from '@reduxjs/toolkit';
 import initialState from '../initialState';
 import {
+    clearPlan,
     createPlan,
     delPlan,
     dragScheme,
     loadStation,
+    resetPlan,
+    setPlanInfo,
     updatePlan,
     updateSchemeTime,
 } from '../actions';
+import { addMin } from '../util/addMin';
 
 export const stationReducer = createReducer(initialState, builder => {
     builder.addCase(loadStation, (state, action) => {
-        const titleH = 10;
+        const titleH = 70;
 
         const rawH = 70;
         const minW = 5;
@@ -39,6 +43,8 @@ export const stationReducer = createReducer(initialState, builder => {
             padding,
             captionW,
         };
+
+        state.station = action.payload;
     });
 });
 
@@ -46,8 +52,8 @@ export const planReducer = createReducer(initialState, builder => {
     builder.addCase(createPlan, (state, action) => {
         state.plan.path.push({
             id: state.plan.path.length,
-            train: Math.random().toString(36).slice(-5),
-            scheme: action.payload,
+            train: action.payload.train ?? Math.random().toString(36).slice(-5),
+            scheme: action.payload.scheme,
         });
     });
 
@@ -63,6 +69,19 @@ export const planReducer = createReducer(initialState, builder => {
         if (index > -1) {
             state.plan.path.splice(index, 1);
         }
+    });
+    builder.addCase(clearPlan, state => {
+        state.plan.path = [];
+    });
+    builder.addCase(resetPlan, (state, action) => {
+        state.plan = action.payload;
+    });
+
+    builder.addCase(setPlanInfo, (state, action) => {
+        state.plan = {
+            ...state.plan,
+            ...action.payload,
+        };
     });
 });
 
@@ -81,6 +100,28 @@ export const schemeReducer = createReducer(initialState, builder => {
 
         if (pathIndex > -1) {
             const scheme = state.plan.path[pathIndex].scheme[action.payload.schemeIndex];
+
+            const dStartTime =
+                action.payload.startTime.h * 60 +
+                action.payload.startTime.m -
+                scheme.startTime.h * 60 -
+                scheme.startTime.m;
+            const dEndTime =
+                action.payload.endTime.h * 60 +
+                action.payload.endTime.m -
+                scheme.endTiem.h * 60 -
+                scheme.endTiem.m;
+
+            const lastScheme = state.plan.path[pathIndex].scheme[action.payload.schemeIndex - 1];
+            const nextScheme = state.plan.path[pathIndex].scheme[action.payload.schemeIndex + 1];
+            if (lastScheme) {
+                lastScheme.endTiem = addMin(lastScheme.endTiem, dStartTime);
+            }
+
+            if (nextScheme) {
+                nextScheme.startTime = addMin(nextScheme.startTime, dEndTime);
+            }
+
             scheme.startTime = action.payload.startTime;
             scheme.endTiem = action.payload.endTime;
         }
