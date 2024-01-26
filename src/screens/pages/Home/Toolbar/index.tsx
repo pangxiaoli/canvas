@@ -53,14 +53,15 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
             <div className='toolbar_container'>
                 <label className='toolbar_container--change'>
                     <Icon
-                        className='c-qiehuanditu'
+                        className='fa-solid fa-retweet'
                         data-tooltip-id='toolbar-tooltip'
                         data-tooltip-content='切换底图'
                     ></Icon>
                     <input type='file' name='change' onChange={handleUpload} />
                 </label>
+
                 <Icon
-                    className='c-daochu'
+                    className='fa-solid fa-download'
                     onClick={handelExport}
                     data-tooltip-id='toolbar-tooltip'
                     data-tooltip-content='导出底图'
@@ -69,13 +70,14 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
                 <div className='toolbar_container--line'></div>
 
                 <Icon
-                    className='c-sheji'
+                    className='fa-solid fa-pen-ruler'
                     onClick={handleAdd}
                     data-tooltip-id='toolbar-tooltip'
                     data-tooltip-content='新增作业线'
                 ></Icon>
+
                 <Icon
-                    className='c-shanchu'
+                    className='fa-solid fa-trash-can'
                     onClick={handelDel}
                     data-tooltip-id='toolbar-tooltip'
                     data-tooltip-content='删除'
@@ -83,14 +85,15 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
 
                 <label className='toolbar_container--change'>
                     <Icon
-                        className='c-dkwj'
+                        className='fa-solid fa-folder-open'
                         data-tooltip-id='toolbar-tooltip'
                         data-tooltip-content='打开作业线'
                     ></Icon>
                     <input type='file' name='change' onChange={handleLineUpload} />
                 </label>
+
                 <Icon
-                    className='c-baocun'
+                    className='fa-solid fa-download'
                     onClick={handleLineSave}
                     data-tooltip-id='toolbar-tooltip'
                     data-tooltip-content='保存作业线'
