@@ -7,7 +7,10 @@ export const loadPlan = createAction<TPlan>('draw/loadPlan');
 
 export const createPlan = createAction<TLine[]>('draw/createPlan');
 export const updatePlan = createAction<TPlanPath>('draw/updatePlan');
+export const clearPlan = createAction<void>('draw/clearPlan');
 export const delPlan = createAction<Pick<TPlanPath, 'id'>>('draw/delPlan');
+export const resetPlan = createAction<any>('draw/resetPlan');
+
 export const dragScheme = createAction<
     Pick<TPlanPath, 'id'> & { schemeIndex: number; center: Pick<TLine, 'center'> }
 >('draw/dragScheme');

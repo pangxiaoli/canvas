@@ -3,20 +3,37 @@ import React, { HTMLAttributes } from 'react';
 import './style.less';
 import Icon from '@/components/Icon';
 import { setIsDraw } from '@/store/draw';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
+import TrackDesign from '../Canvas/BgLayer/TrackDesign';
+import useDialog from '@/hooks/useDialog';
+import { getPlan, getStation } from '@/store/draw/selectors';
+import { downloadObjectAsToml } from './utils/downloadObjectAsYml';
+import { formatDate } from '@/store/draw/util/formatDate';
+import { parse } from 'yaml';
+import { clearPlan, loadStation, resetPlan } from '@/store/draw/actions';
+import Scheme from './Scheme';
 
 export type IToolbarProps = HTMLAttributes<HTMLElement>;
 
 const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
     const dispatch = useDispatch();
+    const section = useSelector(getStation, shallowEqual);
+    const plan = useSelector(getPlan, shallowEqual);
+
+    const BgDedign = useDialog(<TrackDesign />);
+    const SchemeDialog = useDialog(<Scheme />);
 
     const handleAdd = () => {
         dispatch(setIsDraw(true));
     };
 
-    const handelExport = () => {};
-    const handelDel = () => {};
+    const handelExport = () => {
+        downloadObjectAsToml(section, formatDate(new Date()));
+    };
+    const handelDel = () => {
+        dispatch(clearPlan());
+    };
 
     const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target?.files?.length) {
@@ -27,7 +44,8 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
         fileReader.readAsText(e.target.files[0], 'UTF-8');
         fileReader.onload = res => {
             if (res.target?.result && typeof res.target?.result === 'string') {
-                // TODO
+                const yml = parse(res.target.result);
+                dispatch(loadStation(yml));
             }
         };
     };
@@ -41,12 +59,19 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
         fileReader.readAsText(e.target.files[0], 'UTF-8');
         fileReader.onload = res => {
             if (res.target?.result && typeof res.target?.result === 'string') {
-                //TODO
+                const yml = parse(res.target.result);
+                dispatch(resetPlan(yml));
             }
         };
     };
 
-    const handleLineSave = () => {};
+    const handleLineSave = () => {
+        downloadObjectAsToml(plan, formatDate(new Date()));
+    };
+
+    const handleScheme = () => {
+        SchemeDialog.open();
+    };
 
     return (
         <div className={classNames('home_page--toolbar', className)} {...resetProps}>
@@ -65,6 +90,13 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
                     onClick={handelExport}
                     data-tooltip-id='toolbar-tooltip'
                     data-tooltip-content='导出底图'
+                ></Icon>
+
+                <Icon
+                    onClick={BgDedign.open}
+                    className='fa-solid fa-wrench'
+                    data-tooltip-id='toolbar-tooltip'
+                    data-tooltip-content='编辑底图'
                 ></Icon>
 
                 <div className='toolbar_container--line'></div>
@@ -99,6 +131,23 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
                     data-tooltip-content='保存作业线'
                 ></Icon>
 
+                <Icon
+                    className='fa-solid fa-circle-info'
+                    onClick={handleScheme}
+                    data-tooltip-id='toolbar-tooltip'
+                    data-tooltip-content='股道信息统计'
+                ></Icon>
+
+                <a
+                    href='http://github.com/pangxiaoli/canvas'
+                    target='_blank'
+                    className='toolbar_container--github'
+                >
+                    <Icon className='fa-brands fa-github'></Icon>
+                </a>
+
+                {BgDedign.Ctx}
+                {SchemeDialog.Ctx}
                 <Tooltip id='toolbar-tooltip' />
             </div>
         </div>

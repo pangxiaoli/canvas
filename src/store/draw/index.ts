@@ -1,11 +1,18 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import initialState from './initialState';
-import { createPlan, dragScheme, loadStation, updateSchemeTime } from './actions';
+import {
+    clearPlan,
+    createPlan,
+    dragScheme,
+    loadStation,
+    resetPlan,
+    updateSchemeTime,
+} from './actions';
 import { planReducer, schemeReducer, stationReducer } from './reducers';
 import { EPenState } from './initialState/type';
 
 const draw = createSlice({
-    name: 'user',
+    name: 'draw',
     initialState,
     reducers: {
         setPenState: (state, action: PayloadAction<EPenState>) => {
@@ -21,7 +28,9 @@ const draw = createSlice({
     extraReducers: builder => {
         builder.addCase(loadStation, stationReducer);
         builder.addCase(createPlan, planReducer);
+        builder.addCase(clearPlan, planReducer);
         builder.addCase(dragScheme, schemeReducer);
+        builder.addCase(resetPlan, planReducer);
         builder.addCase(updateSchemeTime, schemeReducer);
     },
 });

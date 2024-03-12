@@ -29,7 +29,8 @@ type TYard = {
 };
 type TSwitch = {
     id: string;
-    tracks: [TTrack['id'], TTrack['id']];
+    track0: TTrack;
+    track1: TTrack;
     /** 通过时间 */
     time: number;
 };

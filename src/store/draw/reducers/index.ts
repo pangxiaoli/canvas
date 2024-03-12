@@ -1,13 +1,16 @@
 import { createReducer } from '@reduxjs/toolkit';
 import initialState from '../initialState';
 import {
+    clearPlan,
     createPlan,
     delPlan,
     dragScheme,
     loadStation,
+    resetPlan,
     updatePlan,
     updateSchemeTime,
 } from '../actions';
+import { addMin } from '../util/addMin';
 
 export const stationReducer = createReducer(initialState, builder => {
     builder.addCase(loadStation, (state, action) => {
@@ -39,6 +42,8 @@ export const stationReducer = createReducer(initialState, builder => {
             padding,
             captionW,
         };
+
+        state.station = action.payload;
     });
 });
 
@@ -64,6 +69,12 @@ export const planReducer = createReducer(initialState, builder => {
             state.plan.path.splice(index, 1);
         }
     });
+    builder.addCase(clearPlan, state => {
+        state.plan.path = [];
+    });
+    builder.addCase(resetPlan, (state, action) => {
+        state.plan = action.payload;
+    });
 });
 
 export const schemeReducer = createReducer(initialState, builder => {
@@ -81,6 +92,28 @@ export const schemeReducer = createReducer(initialState, builder => {
 
         if (pathIndex > -1) {
             const scheme = state.plan.path[pathIndex].scheme[action.payload.schemeIndex];
+
+            const dStartTime =
+                action.payload.startTime.h * 60 +
+                action.payload.startTime.m -
+                scheme.startTime.h * 60 -
+                scheme.startTime.m;
+            const dEndTime =
+                action.payload.endTime.h * 60 +
+                action.payload.endTime.m -
+                scheme.endTiem.h * 60 -
+                scheme.endTiem.m;
+
+            const lastScheme = state.plan.path[pathIndex].scheme[action.payload.schemeIndex - 1];
+            const nextScheme = state.plan.path[pathIndex].scheme[action.payload.schemeIndex + 1];
+            if (lastScheme) {
+                lastScheme.endTiem = addMin(lastScheme.endTiem, dStartTime);
+            }
+
+            if (nextScheme) {
+                nextScheme.startTime = addMin(nextScheme.startTime, dEndTime);
+            }
+
             scheme.startTime = action.payload.startTime;
             scheme.endTiem = action.payload.endTime;
         }

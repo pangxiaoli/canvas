@@ -14,13 +14,14 @@ const useDialog: TUseDialog = content => {
     };
     const close = () => setIsOpen(false);
 
-    const ctx =
+    const Ctx =
         isOpen &&
         ReactDOM.createPortal(
             <Dialog onClose={() => setIsOpen(false)}>
                 {React.isValidElement(content)
                     ? React.cloneElement(content as React.ReactElement<any>, {
                           ...dialogData,
+                          close,
                       })
                     : null}
             </Dialog>,
@@ -28,7 +29,7 @@ const useDialog: TUseDialog = content => {
         );
 
     return {
-        ctx,
+        Ctx,
         open,
         close,
     };

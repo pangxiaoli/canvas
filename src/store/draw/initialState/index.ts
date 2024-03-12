@@ -126,19 +126,28 @@ const initialState: TDraw = {
         ],
         switch: [
             {
-                id: '1',
-                tracks: ['1', '2'],
-                time: 1,
+                id: '1，2',
+                track0: {
+                    id: '1',
+                    name: '上海南',
+                },
+                track1: {
+                    id: '2',
+                    name: 'D19',
+                },
+                time: 2,
             },
             {
-                id: '2',
-                tracks: ['1', '3'],
-                time: 1,
-            },
-            {
-                id: '3',
-                tracks: ['2', '3'],
-                time: 1,
+                id: '3，4，5',
+                track0: {
+                    id: '2',
+                    name: 'D19',
+                },
+                track1: {
+                    id: '3',
+                    name: 'D6',
+                },
+                time: 3,
             },
         ],
     },
