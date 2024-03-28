@@ -1,3 +1,5 @@
+import { TTrack } from '@/store/draw/initialState/type';
+
 export type TTime = {
     h: number;
     m: number;
@@ -8,10 +10,7 @@ export type TLine = {
     endTiem: TTime;
     center: {
         yard: string;
-        track: {
-            id: string;
-            name: string;
-        };
+        track: TTrack;
     };
 };
 

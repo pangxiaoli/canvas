@@ -7,6 +7,7 @@ import {
     dragScheme,
     loadStation,
     resetPlan,
+    setPlanInfo,
     updatePlan,
     updateSchemeTime,
 } from '../actions';
@@ -51,8 +52,8 @@ export const planReducer = createReducer(initialState, builder => {
     builder.addCase(createPlan, (state, action) => {
         state.plan.path.push({
             id: state.plan.path.length,
-            train: Math.random().toString(36).slice(-5),
-            scheme: action.payload,
+            train: action.payload.train ?? Math.random().toString(36).slice(-5),
+            scheme: action.payload.scheme,
         });
     });
 
@@ -74,6 +75,13 @@ export const planReducer = createReducer(initialState, builder => {
     });
     builder.addCase(resetPlan, (state, action) => {
         state.plan = action.payload;
+    });
+
+    builder.addCase(setPlanInfo, (state, action) => {
+        state.plan = {
+            ...state.plan,
+            ...action.payload,
+        };
     });
 });
 

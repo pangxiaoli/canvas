@@ -92,7 +92,13 @@ const TrackDrsign = ({ close }: any) => {
                     <ProFormList
                         name='tracks'
                         initialValue={station.yards.flatMap(i =>
-                            i.tracks.map(j => ({ label: j.name, value: j.id, yard: i.name })),
+                            i.tracks.map(j => ({
+                                label: j.name,
+                                value: j.id,
+                                yard: i.name,
+                                time_shot: j.time_shot,
+                                time_long: j.time_long,
+                            })),
                         )}
                         copyIconProps={false}
                         deleteIconProps={{
@@ -106,6 +112,8 @@ const TrackDrsign = ({ close }: any) => {
                                 name='yard'
                                 options={station.yards.map(i => ({ value: i.name, label: i.name }))}
                             />
+                            <ProFormText name='time_shot' label='最小作业时间标准(短编)' />
+                            <ProFormText name='time_long' label='最小作业时间标准(长编)' />
                         </ProFormGroup>
                     </ProFormList>
                 </StepsForm.StepForm>

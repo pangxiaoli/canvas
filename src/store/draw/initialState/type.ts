@@ -20,6 +20,8 @@ export type TInserval = {
 export type TTrack = {
     id: string;
     name: string;
+    time_shot?: number;
+    time_long?: number;
 };
 
 type TYard = {

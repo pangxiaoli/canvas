@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Layer, Line, Rect } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
@@ -7,9 +7,13 @@ import useDraw from './hooks/useDraw';
 import usePoint from './hooks/usePoint';
 import { createPlan } from '@/store/draw/actions';
 import Paths from './Paths';
+import getTimeDifference from '@/store/draw/util/getTimeDifference';
+import { Html } from 'react-konva-utils';
+import { ModalForm, ProFormText } from '@ant-design/pro-components';
 
 const FgLayer: React.FC = () => {
     const dispatch = useDispatch();
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
     const size = useSelector(getSize, shallowEqual);
 
@@ -36,11 +40,20 @@ const FgLayer: React.FC = () => {
     };
     const handleMouseUp = () => {
         isDone.current = false;
+        const dTime = getTimeDifference(draw.lines.at(-1)!.endTiem, draw.lines.at(-1)!.startTime);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (dTime < draw.lines.at(-1)!.center!.track!.time_long) {
+            console.log(1);
+        }
+        console.log(
+            draw.lines.at(-1),
+            getTimeDifference(draw.lines.at(-1)!.endTiem, draw.lines.at(-1)!.startTime),
+        );
     };
     const handleContentMenu = (e: KonvaEventObject<MouseEvent>) => {
         e.evt.preventDefault();
-        dispatch(createPlan(draw.lines));
-        draw.clearLine();
+        setIsDialogOpen(true);
     };
     const handleMouseLeave = () => {
         isDone.current = false;
@@ -80,6 +93,20 @@ const FgLayer: React.FC = () => {
             />
             {renderLine()}
             <Paths></Paths>
+
+            <Html>
+                <ModalForm
+                    title='作业线信息'
+                    open={isDialogOpen}
+                    onFinish={async e => {
+                        await setIsDialogOpen(false);
+                        await dispatch(createPlan({ scheme: draw.lines, train: e.id }));
+                        await draw.clearLine();
+                    }}
+                >
+                    <ProFormText width='xs' name='id' label='动车组编号' />
+                </ModalForm>
+            </Html>
         </Layer>
     );
 };

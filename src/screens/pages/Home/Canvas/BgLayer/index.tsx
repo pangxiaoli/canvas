@@ -3,15 +3,16 @@ import React from 'react';
 import { EClasses, TInserval } from '@/store/draw/initialState/type';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { setIntervals } from '@/store/draw';
-import { getClasses, getSize, getStation } from '@/store/draw/selectors';
+import { getClasses, getPlanInfo, getSize, getStation } from '@/store/draw/selectors';
 
 const BgLayer: React.FC = () => {
     const dispatch = useDispatch();
     const size = useSelector(getSize, shallowEqual);
     const classes = useSelector(getClasses, shallowEqual);
     const section = useSelector(getStation, shallowEqual);
+    const planInfo = useSelector(getPlanInfo, shallowEqual);
 
-    const timeStart = classes === EClasses.DAY ? 6 : 20;
+    const timeStart = classes === EClasses.DAY ? 8 : 20;
 
     // 股道
     const renderTrack = () => {
@@ -62,10 +63,7 @@ const BgLayer: React.FC = () => {
                     start: y0 + dh,
                     end: y0 + size.rawH + dh,
                     center: y0 + size.rawH / 2 + dh,
-                    track: {
-                        id: j.id,
-                        name: j.name,
-                    },
+                    track: j,
                     yard: i.name,
                 });
 
@@ -177,6 +175,16 @@ const BgLayer: React.FC = () => {
 
     return (
         <Layer listening={false}>
+            {/* title */}
+            <Text
+                text={`日期：${planInfo.date}      班别：${
+                    planInfo.classes === EClasses.DAY ? '白班' : '夜班'
+                }      组别：${planInfo.group}       调度员：${planInfo.admin}`}
+                x={90}
+                y={20}
+                fill='black'
+                fontSize={28}
+            />
             {/* 边框 */}
             <Rect
                 x={size.padding}
@@ -186,7 +194,6 @@ const BgLayer: React.FC = () => {
                 stroke={'#008000'}
                 strokeWidth={1}
             />
-
             {/* 第一行 */}
             <Line
                 points={[
@@ -198,7 +205,6 @@ const BgLayer: React.FC = () => {
                 stroke={'#008000'}
                 strokeWidth={1}
             />
-
             {renderTrack()}
             {renderCol()}
         </Layer>

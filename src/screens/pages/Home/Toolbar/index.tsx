@@ -13,16 +13,20 @@ import { formatDate } from '@/store/draw/util/formatDate';
 import { parse } from 'yaml';
 import { clearPlan, loadStation, resetPlan } from '@/store/draw/actions';
 import Scheme from './Scheme';
+import { useNavigate } from 'react-router-dom';
+import TrainInfo from './TrainInfo';
 
 export type IToolbarProps = HTMLAttributes<HTMLElement>;
 
 const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const section = useSelector(getStation, shallowEqual);
     const plan = useSelector(getPlan, shallowEqual);
 
     const BgDedign = useDialog(<TrackDesign />);
     const SchemeDialog = useDialog(<Scheme />);
+    const TrainInfoDialog = useDialog(<TrainInfo />);
 
     const handleAdd = () => {
         dispatch(setIsDraw(true));
@@ -138,6 +142,22 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
                     data-tooltip-content='股道信息统计'
                 ></Icon>
 
+                <Icon
+                    className='fa-solid fa-train'
+                    onClick={TrainInfoDialog.open}
+                    data-tooltip-id='toolbar-tooltip'
+                    data-tooltip-content='车辆信息统计'
+                ></Icon>
+
+                <div className='toolbar_container--line'></div>
+
+                <Icon
+                    className='fa-solid fa-right-left'
+                    onClick={() => navigate('/login')}
+                    data-tooltip-id='toolbar-tooltip'
+                    data-tooltip-content='交接班'
+                ></Icon>
+
                 <a
                     href='http://github.com/pangxiaoli/canvas'
                     target='_blank'
@@ -148,6 +168,8 @@ const Toolbar: React.FC<IToolbarProps> = ({ className, ...resetProps }) => {
 
                 {BgDedign.Ctx}
                 {SchemeDialog.Ctx}
+                {TrainInfoDialog.Ctx}
+
                 <Tooltip id='toolbar-tooltip' />
             </div>
         </div>

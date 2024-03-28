@@ -6,6 +6,7 @@ import {
     dragScheme,
     loadStation,
     resetPlan,
+    setPlanInfo,
     updateSchemeTime,
 } from './actions';
 import { planReducer, schemeReducer, stationReducer } from './reducers';
@@ -29,6 +30,7 @@ const draw = createSlice({
         builder.addCase(loadStation, stationReducer);
         builder.addCase(createPlan, planReducer);
         builder.addCase(clearPlan, planReducer);
+        builder.addCase(setPlanInfo, planReducer);
         builder.addCase(dragScheme, schemeReducer);
         builder.addCase(resetPlan, planReducer);
         builder.addCase(updateSchemeTime, schemeReducer);
